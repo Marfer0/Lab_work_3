@@ -4,22 +4,33 @@ from tkinter import filedialog, messagebox
 from pygame import mixer
 
 
-fd = 'C:/Users/PC/PycharmProjects/Lab_work_3/playlist'
-playlist = os.listdir(fd)
+
 mixer.init()
 current_index = 0
-for file in playlist:
-    mixer.music.load(os.path.join(fd, file))
 
 
 def select_music_folder():
-    folder_path = filedialog.askdirectory(
-        title="Выберите папку с музыкой",
-        initialdir=os.path.expanduser("~"),
-        mustexist=True
-    )
-    print(folder_path)
+    folder_path = filedialog.askdirectory(title="Выберите папку с музыкой",initialdir=os.path.expanduser("~"),mustexist=True)
+    if folder_path:
+        audio_files = [f for f in os.listdir(folder_path)
+                       if f.lower().endswith(('.mp3', '.wav', '.ogg', '.flac', '.m4a'))]
+
+        if not audio_files:
+            return None
     return folder_path
+
+def browse_folder():
+    global fd, current_index, playlist
+    selected_folder = select_music_folder()
+    if selected_folder is not None:
+        fd = selected_folder
+        playlist = []
+        current_index = 0
+        playlist = os.listdir(fd)
+        for file in playlist:
+            mixer.music.load(os.path.join(fd, file))
+    else:
+        pass
 
 
 def load_and_play():
@@ -86,6 +97,6 @@ btn_next = Button(mp, image=forward_button, bg='#363d4d', height=50, width=50, c
 btn_next.place(x=625, y=460)
 btn_previous = Button(mp, image=back_button, bg='#363d4d', height=50, width=50, command=previous_track)
 btn_previous.place(x=365, y=460)
-btn_folder = Button(mp, image=folder_button, bg='#363d4d', height=50, width=50, command=select_music_folder)
+btn_folder = Button(mp, image=folder_button, bg='#363d4d', height=50, width=50, command=browse_folder)
 btn_folder.place(x=690, y=460)
 mp.mainloop()

@@ -1,5 +1,41 @@
+import os
 from tkinter import *
 from pygame import mixer
+
+fd = 'C:/Users/PC/PycharmProjects/Lab_work_3/playlist'
+playlist = os.listdir(fd)
+mixer.init()
+current_index = 0
+for file in playlist:
+    mixer.music.load(os.path.join(fd, file))
+
+
+def load_and_play():
+    global current_index
+    if playlist:
+        track_path = os.path.join(fd, playlist[current_index])
+        mixer.music.load(track_path)
+        mixer.music.play()
+
+def next_track():
+    global current_index
+    current_index = (current_index + 1)
+    load_and_play()
+
+def previous_track():
+    global current_index
+    current_index = (current_index - 1)
+    load_and_play()
+
+
+def toggle_pause():
+    if btn_pause['relief'] == SUNKEN:
+        mixer.music.unpause()
+        btn_pause.config(relief=RAISED)
+    else:
+        mixer.music.pause()
+        btn_pause.config(relief=SUNKEN)
+
 
 mp = Tk()
 mp.geometry("800x540+250-100")
@@ -14,15 +50,18 @@ canvas.create_polygon(0, 540, 0, 400, 800, 400, 800, 540, fill='#2b3140')
 music_pic = PhotoImage(file='picture.png')
 canvas.create_image(165, 225, image=music_pic)
 play_button = PhotoImage(file='play-button.png')
-canvas.create_image(500, 485, image=play_button)
-back_button = PhotoImage(file='back-button.png')
-canvas.create_image(435, 485, image=back_button)
+stop_button = PhotoImage(file='stop-button.png')
+pause_button = PhotoImage(file='pause-button.png')
 forward_button = PhotoImage(file='forward-button.png')
-canvas.create_image(565, 485, image=forward_button)
-circle = canvas.create_oval(475, 460, 525, 510,  fill="", outline="", width=1)
-canvas.tag_bind(circle, "<Button-1>", lambda e: on_click())
-def on_click(event=None):
-    mixer.init()
-    mixer.music.load('C:/Users/PC/Downloads/Limp Bizkit - My Generation.mp3')
-    mixer.music.play(0)
+back_button = PhotoImage(file='back-button.png')
+btn_play = Button(mp, image=play_button, bg='#363d4d', height=50, width=50, command=load_and_play)
+btn_play.place(x=475, y=460)
+btn_pause = Button(mp, image=pause_button, bg='#363d4d', height=50, width=50, command=toggle_pause)
+btn_pause.place(x=540, y=460)
+btn_stop = Button(mp, image=stop_button, bg='#363d4d', height=50, width=50, command=mixer.music.stop)
+btn_stop.place(x=410, y=460)
+btn_next = Button(mp, image=forward_button, bg='#363d4d', height=50, width=50, command=next_track)
+btn_next.place(x=605, y=460)
+btn_previous = Button(mp, image=back_button, bg='#363d4d', height=50, width=50, command=previous_track)
+btn_previous.place(x=345, y=460)
 mp.mainloop()

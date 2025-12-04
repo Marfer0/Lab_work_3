@@ -4,7 +4,7 @@ from tkinter import filedialog, messagebox
 from pygame import mixer
 
 
-
+playlist = []
 mixer.init()
 current_index = 0
 
@@ -23,6 +23,7 @@ def browse_folder():
     global fd, current_index, playlist
     selected_folder = select_music_folder()
     if selected_folder is not None:
+        canvas.delete('no_track')
         fd = selected_folder
         playlist = []
         current_index = 0
@@ -30,16 +31,20 @@ def browse_folder():
         for file in playlist:
             mixer.music.load(os.path.join(fd, file))
     else:
-        pass
+        canvas.delete('label')
+        canvas.create_text(185, 485, text='Треков в этой папке нет!', font=('Arial', 12, 'bold'), fill='white',tags='no_track')
 
 
 def load_and_play():
     global current_index
-    if playlist:
+    if len(playlist) != 0:
+        canvas.delete('no_track')
         track_path = os.path.join(fd, playlist[current_index])
         mixer.music.load(track_path)
         mixer.music.play()
         canvas.create_text(185, 485, text=playlist[current_index][:-4], font=('Arial', 12, 'bold'), fill='white', tags='label')
+    else:
+        canvas.create_text(185, 485, text='Выберите папку!', font=('Arial', 12, 'bold'), fill='white',tags='no_track')
 
 def next_track():
     global current_index

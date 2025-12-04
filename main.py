@@ -1,4 +1,5 @@
 from tkinter import *
+from pygame import mixer
 
 mp = Tk()
 mp.geometry("800x540+250-100")
@@ -18,4 +19,10 @@ back_button = PhotoImage(file='back-button.png')
 canvas.create_image(435, 485, image=back_button)
 forward_button = PhotoImage(file='forward-button.png')
 canvas.create_image(565, 485, image=forward_button)
+circle = canvas.create_oval(475, 460, 525, 510,  fill="", outline="", width=1)
+canvas.tag_bind(circle, "<Button-1>", lambda e: on_click())
+def on_click(event=None):
+    mixer.init()
+    mixer.music.load('C:/Users/PC/Downloads/Limp Bizkit - My Generation.mp3')
+    mixer.music.play(0)
 mp.mainloop()

@@ -112,8 +112,8 @@ def on_resize(event=None):
         if current_image_size != "small":
             current_image_size = "small"
         current_pic = music_pic_small
-    img_x = window_width * 0.206
-    img_y = window_height * 0.417
+    img_x = window_width * 0.195
+    img_y = window_height * 0.485
     canvas.create_image(img_x, img_y, image=current_pic, anchor='center')
     update_button_positions(window_width, window_height)
 

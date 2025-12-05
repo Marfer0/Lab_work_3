@@ -7,6 +7,7 @@ from pygame import mixer
 playlist = []
 mixer.init()
 current_index = 0
+is_paused = False
 
 
 def select_music_folder():
@@ -37,14 +38,20 @@ def browse_folder():
 
 def load_and_play():
     global current_index
-    if len(playlist) != 0:
-        canvas.delete('no_track')
-        track_path = os.path.join(fd, playlist[current_index])
-        mixer.music.load(track_path)
-        mixer.music.play()
-        canvas.create_text(185, 485, text=playlist[current_index][:-4], font=('Arial', 12, 'bold'), fill='white', tags='label')
+    global is_paused
+    if is_paused:
+        mixer.music.unpause()
+        is_paused = False
+        btn_pause.config(relief=RAISED)
     else:
-        canvas.create_text(185, 485, text='Выберите папку!', font=('Arial', 12, 'bold'), fill='white',tags='no_track')
+        if len(playlist) != 0:
+            canvas.delete('no_track')
+            track_path = os.path.join(fd, playlist[current_index])
+            mixer.music.load(track_path)
+            mixer.music.play()
+            canvas.create_text(185, 485, text=playlist[current_index][:-4], font=('Arial', 12, 'bold'), fill='white', tags='label')
+        else:
+            canvas.create_text(185, 485, text='Выберите папку!', font=('Arial', 12, 'bold'), fill='white',tags='no_track')
 
 def next_track():
     global current_index
@@ -65,15 +72,17 @@ def previous_track():
     load_and_play()
 
 
-def toggle_pause():
-    if btn_pause['relief'] == SUNKEN:
-        mixer.music.unpause()
-        btn_pause.config(relief=RAISED)
-    else:
-        mixer.music.pause()
-        btn_pause.config(relief=SUNKEN)
+def pause():
+    global is_paused
+    mixer.music.pause()
+    btn_pause.config(relief=SUNKEN)
+    is_paused = True
 
-
+def stop():
+    global is_paused
+    mixer.music.stop()
+    is_paused = False
+    btn_pause.config(relief=RAISED)
 mp = Tk()
 mp.geometry("800x540+250-100")
 mp.minsize(800,540)
@@ -94,9 +103,9 @@ back_button = PhotoImage(file='images/back-button.png')
 folder_button = PhotoImage(file='images/folder-button.png')
 btn_play = Button(mp, image=play_button, bg='#363d4d', height=50, width=50, command=load_and_play)
 btn_play.place(x=495, y=460)
-btn_pause = Button(mp, image=pause_button, bg='#363d4d', height=50, width=50, command=toggle_pause)
+btn_pause = Button(mp, image=pause_button, bg='#363d4d', height=50, width=50, command=pause)
 btn_pause.place(x=560, y=460)
-btn_stop = Button(mp, image=stop_button, bg='#363d4d', height=50, width=50, command=mixer.music.stop)
+btn_stop = Button(mp, image=stop_button, bg='#363d4d', height=50, width=50, command=stop)
 btn_stop.place(x=430, y=460)
 btn_next = Button(mp, image=forward_button, bg='#363d4d', height=50, width=50, command=next_track)
 btn_next.place(x=625, y=460)
